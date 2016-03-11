@@ -1,8 +1,10 @@
-#include <iostream>											// This program is meant to be a tool designed to give me access to generic high-performance sorting algorithms and data structures
-#include <string>											// for use in my other projects. The learning goal is 2 pronged; I am trying to practice and learn better object-oriented
-															// program design while also trying to gain a better understanding and familiarity with various useful algorithms/data structures.
+#include <iostream>
+#include <stdlib.h>
+#include <string>
 
-using namespace std;																					// Author: Julian Pitney
+using namespace std;
+
+
 
 
 
@@ -106,14 +108,95 @@ template<class T> void Bubble_Sorter<T>::bubble_sort()
 		{
 			if (this->sorting_array[i]->compare(this->sorting_array[i + 1]) == 1)
 			{
-				T* temp = sorting_array[i];
-				sorting_array[i] = sorting_array[i + 1];
-				sorting_array[i + 1] = temp;
+				T* temp = this-> sorting_array[i];
+				this->sorting_array[i] = this->sorting_array[i + 1];
+				this->sorting_array[i + 1] = temp;
 				swap_made = true; 
 			}
-		}
+		}                
 	}
 }
+
+template<class T> class Quick_Sorter : public Sorter<T>
+{
+public:
+
+	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
+	int quick_sort_internal(T* input_array[], int intput_array_size);
+	void quick_sort();
+
+private:
+};
+
+template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_size) : Sorter<T>::Sorter(ptr_arr, sorting_array_size)
+{
+	cout << "Quick_Sorter successfully created! \n";
+}
+
+template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int input_array_size, int start_index, int end_index)
+{
+	if(input_array_size <= 1)
+	{
+		return 1;
+	}
+
+	int middle_index;	
+
+	if(input_array_size % 2 == 0)
+	{
+		middle_index = input_array_size / 2;
+	}
+	else if(input_array_size % 2 == 1)
+	{
+		middle_index = (input_array_size / 2.0) - 0.5;
+	}
+
+	int pivot_index = middle_index;
+	T* pivot = input_array[pivot_index];
+
+	bool partitioned = false;	
+	int left = start_index;
+	int right = end_index;
+	T* swap_left;
+	T* swap_right;
+
+	while(!partitioned)
+	{
+		
+
+		for(; left < pivot_index; left++)
+		{
+			if(input_array[left]->compare(pivot) == 1)
+			{
+				swap_left = input_array[left];
+				break;
+			}
+		}
+
+		for(; right > pivot_index; right--)
+		{
+			if(input_array[right]->compare(pivot) == 1)
+			{
+				swap_right = input_array[right];
+				break;
+			}
+		}
+	
+		
+	}
+
+	
+
+		
+	
+}
+
+template<class T> void Quick_Sorter<T>::quick_sort()
+{
+	this->quick_sort_internal(this->sorting_array, this->sorting_array_size);
+}
+
+
 
 
 
@@ -187,7 +270,7 @@ public:
 int main()
 {
 
-	const int size = 100;
+	const int size = 2;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -197,19 +280,15 @@ int main()
 		test_arr[i] = new test_compare_object(int_arr[i]);
 	}
 
+
+	
 	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr, size);
 
 	test1->print_sorting_array();
 	test1->bubble_sort();
 	test1->print_sorting_array();
 
-	
-//  test1->bubble_sort();  <----- Don't work 
-
-	
-
-
-
-
+	Quick_Sorter<test_compare_object> *test2 = new Quick_Sorter<test_compare_object>(test_arr,size);
+	test2->quick_sort();
 	return 0;
 }
