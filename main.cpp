@@ -16,8 +16,9 @@ using namespace std;
 //	4. Make passing pointer to array of pointers to generic objects that have constructors to the constructor of an object from a generic derived class work [COMPLETE]
 //	5. Drink mountain dew [COMPLETE]
 //	6. Implement generic quicksort
-//  7. Implement generic mergesort
-//  8. Implement generic heapsort
+//  	7. Implement generic mergesort
+//  	8. Implement generic heapsort
+// 	9. Generic print function (probably need a standar object specific implementation)
 //
 //				Things To Do (Higher Level)
 //
@@ -57,6 +58,9 @@ template<class T> void Sorter<T>::update_sorting_array(T* updated_ptr_arr[], int
 	this->sorting_array_size = sorting_array_size;
 }
 
+
+// This is broken. Need to come up with generic way for printing list of objects. Probably need standardized get_val or print_val 
+// inside the objects being sorted.
 template<class T> void Sorter<T>::print_sorting_array()
 {
 	cout << this->sorting_array_size << " elements in array \n\n";
@@ -74,8 +78,8 @@ template<class T> void Sorter<T>::print_sorting_array()
 
 
 
+// BUBBLE SORTER
 
-// Bubble-sorter
 template<class T> class Bubble_Sorter : public Sorter <T>
 {
 public:
@@ -92,9 +96,6 @@ template<class T> Bubble_Sorter<T>::Bubble_Sorter(T* ptr_arr[], int sorting_arra
 {
 	cout << "Bubble sorter successfully created! \n";
 }
-
-
-
 
 template<class T> void Bubble_Sorter<T>::bubble_sort()
 {
@@ -117,12 +118,18 @@ template<class T> void Bubble_Sorter<T>::bubble_sort()
 	}
 }
 
+
+
+
+
+// QUICK SORTER
+
 template<class T> class Quick_Sorter : public Sorter<T>
 {
 public:
 
 	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
-	int quick_sort_internal(T* input_array[], int intput_array_size);
+	int quick_sort_internal(T* input_array[], int intput_array_size,int start_index, int end_index);
 	void quick_sort();
 
 private:
@@ -154,51 +161,94 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	int pivot_index = middle_index;
 	T* pivot = input_array[pivot_index];
 
+	// TEMP LINE
+	cout << "PIVOT: " << pivot->get_val() << "\n\n";
+
+
 	bool partitioned = false;	
 	int left = start_index;
 	int right = end_index;
-	T* swap_left;
-	T* swap_right;
+	int swap_left_index;
+	int swap_right_index;
+	T* temp;
 
 	while(!partitioned)
 	{
 		
-
+		
 		for(; left < pivot_index; left++)
 		{
 			if(input_array[left]->compare(pivot) == 1)
 			{
-				swap_left = input_array[left];
+				swap_left_index = left;
+				break;
+			}
+			else if(left == pivot_index - 1)
+			{
+				swap_left_index = pivot_index;
 				break;
 			}
 		}
 
 		for(; right > pivot_index; right--)
 		{
-			if(input_array[right]->compare(pivot) == 1)
+			if(input_array[right]->compare(pivot) == -1 || input_array[right]->compare(pivot) == 0)
 			{
-				swap_right = input_array[right];
+				swap_right_index = right;
+				break;
+			}
+			else if(right == pivot_index + 1)
+			{
+				swap_right_index = pivot_index;
 				break;
 			}
 		}
+
+		if(swap_right_index == swap_left_index)
+		{
+			partitioned = true;
+			break;
+		}
+		else if (swap_left_index == pivot_index)
+		{
+			temp = input_array[swap_left_index];
+			input_array[swap_left_index] = input_array[swap_right_index];
+			input_array[swap_right_index] = temp;
+			pivot_index = swap_right_index;
+		}
+		else if (swap_right_index == pivot_index)
+		{
+			temp = input_array[swap_right_index];
+			input_array[swap_right_index] = input_array[swap_left_index];
+			input_array[swap_left_index] = temp;
+			pivot_index = swap_left_index;	
+		}
+		else
+		{
+			temp = input_array[swap_right_index];
+			input_array[swap_right_index] = input_array[swap_left_index];
+			input_array[swap_left_index] = temp;
+		}
+		
 	
 		
 	}
 
 	
 
-		
+	return 0;	
 	
 }
 
 template<class T> void Quick_Sorter<T>::quick_sort()
 {
-	this->quick_sort_internal(this->sorting_array, this->sorting_array_size);
+	this->quick_sort_internal(this->sorting_array, this->sorting_array_size, 0, this->sorting_array_size - 1);
 }
 
 
 
 
+// ARRAY GENERATORS
 
 int* int_arr_gen(int size)
 {
@@ -270,7 +320,7 @@ public:
 int main()
 {
 
-	const int size = 2;
+	const int size = 20;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -282,13 +332,14 @@ int main()
 
 
 	
-	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr, size);
 
-	test1->print_sorting_array();
-	test1->bubble_sort();
-	test1->print_sorting_array();
 
 	Quick_Sorter<test_compare_object> *test2 = new Quick_Sorter<test_compare_object>(test_arr,size);
+	cout << "UNPARTITIONED: \n\n";
+	test2->print_sorting_array();
 	test2->quick_sort();
+	cout << "\n\n";
+	cout << "PARTITIONED: \n\n";
+	test2->print_sorting_array();
 	return 0;
 }
