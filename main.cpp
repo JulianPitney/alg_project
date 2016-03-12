@@ -39,7 +39,6 @@ public:
 	void update_sorting_array(T* ptr_arr[], int sorting_array_size);
 	void print_sorting_array();
 
-
 protected:
 	int sorting_array_size;
 	T** sorting_array;
@@ -129,10 +128,13 @@ template<class T> class Quick_Sorter : public Sorter<T>
 public:
 
 	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
-	int quick_sort_internal(T* input_array[], int intput_array_size,int start_index, int end_index);
-	void quick_sort();
+	int quick_sort();
+
 
 private:
+
+	int quick_sort_internal(T* input_array[], int intput_array_size, int start_index, int end_index);
+		
 };
 
 template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_size) : Sorter<T>::Sorter(ptr_arr, sorting_array_size)
@@ -161,9 +163,6 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	int pivot_index = middle_index;
 	T* pivot = input_array[pivot_index];
 
-	// TEMP LINE
-	cout << "PIVOT: " << pivot->get_val() << "\n\n";
-
 
 	bool partitioned = false;	
 	int left = start_index;
@@ -174,8 +173,6 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 
 	while(!partitioned)
 	{
-		
-		
 		for(; left < pivot_index; left++)
 		{
 			if(input_array[left]->compare(pivot) == 1)
@@ -230,19 +227,17 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 			input_array[swap_left_index] = temp;
 		}
 		
-	
+		this->quick_sort_internal(input_array, pivot_index + 1, 0, pivot_index);
+		this->quick_sort_internal(input_array, end_index - pivot_index, pivot_index + 1, end_index);
 		
 	}
 
-	
-
-	return 0;	
-	
+	return pivot_index;
 }
 
-template<class T> void Quick_Sorter<T>::quick_sort()
+template<class T> int Quick_Sorter<T>::quick_sort()
 {
-	this->quick_sort_internal(this->sorting_array, this->sorting_array_size, 0, this->sorting_array_size - 1);
+	return this->quick_sort_internal(this->sorting_array, this->sorting_array_size, 0, this->sorting_array_size - 1);
 }
 
 
@@ -320,7 +315,7 @@ public:
 int main()
 {
 
-	const int size = 20;
+	const int size = 10;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -331,15 +326,8 @@ int main()
 	}
 
 
-	
-
-
 	Quick_Sorter<test_compare_object> *test2 = new Quick_Sorter<test_compare_object>(test_arr,size);
-	cout << "UNPARTITIONED: \n\n";
 	test2->print_sorting_array();
 	test2->quick_sort();
-	cout << "\n\n";
-	cout << "PARTITIONED: \n\n";
-	test2->print_sorting_array();
-	return 0;
-}
+
+ }
