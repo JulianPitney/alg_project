@@ -133,6 +133,7 @@ public:
 
 private:
 
+	bool final_pass = true;
 	int quick_sort_internal(T* input_array[], int intput_array_size, int start_index, int end_index);
 		
 };
@@ -160,7 +161,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 		middle_index = (input_array_size / 2.0) - 0.5;
 	}
 
-	int pivot_index = middle_index;
+	int pivot_index = middle_index + start_index;
 	T* pivot = input_array[pivot_index];
 
 
@@ -168,7 +169,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	int left = start_index;
 	int right = end_index;
 	int swap_left_index;
-	int swap_right_index;
+	int swap_right_index = pivot_index;
 	T* temp;
 
 	while(!partitioned)
@@ -203,6 +204,11 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 
 		if(swap_right_index == swap_left_index)
 		{
+			if (input_array_size == 2)
+			{
+				return 1;
+			}
+
 			partitioned = true;
 			break;
 		}
@@ -225,12 +231,18 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 			temp = input_array[swap_right_index];
 			input_array[swap_right_index] = input_array[swap_left_index];
 			input_array[swap_left_index] = temp;
-		}
-		
-		this->quick_sort_internal(input_array, pivot_index + 1, 0, pivot_index);
-		this->quick_sort_internal(input_array, end_index - pivot_index, pivot_index + 1, end_index);
-		
+		}	
 	}
+
+
+	// this makes it almost work but it's still broken
+	if ((pivot_index + 1) - (start_index) == input_array_size)
+	{
+		return 1;
+	}
+
+	quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
+	quick_sort_internal(input_array, (end_index + 1) - (pivot_index + 1), pivot_index + 1, end_index);
 
 	return pivot_index;
 }
@@ -306,6 +318,11 @@ public:
 		{
 			return -1;
 		}
+		else
+		{
+			// Returning 2 indicates error in comparison
+			return -2;
+		}
 	}
 };
 
@@ -315,7 +332,7 @@ public:
 int main()
 {
 
-	const int size = 10;
+	const int size = 30000;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -327,7 +344,31 @@ int main()
 
 
 	Quick_Sorter<test_compare_object> *test2 = new Quick_Sorter<test_compare_object>(test_arr,size);
-	test2->print_sorting_array();
 	test2->quick_sort();
 
+	int errors = 0;
+	int correct = 0;
+
+
+	for (int i = 0; i < size; i++)
+	{
+		if (i == size - 2)
+		{
+			break;
+		}
+
+		if (test_arr[i]->get_val() <= test_arr[i + 1]->get_val())
+		{
+			correct++;
+		}
+		else
+		{
+			errors++;
+		}
+	}
+
+
+	cout << correct << " correct values" << endl;
+	cout << errors << " errors" << endl;
+	
  }
