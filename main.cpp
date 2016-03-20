@@ -161,18 +161,18 @@ template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_
 
 template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int input_array_size, int start_index, int end_index)
 {
-	if(input_array_size <= 1)
+	if (input_array_size <= 1)
 	{
 		return 1;
 	}
-	
-	int middle_index;	
 
-	if(input_array_size % 2 == 0)
+	int middle_index;
+
+	if (input_array_size % 2 == 0)
 	{
 		middle_index = input_array_size / 2;
 	}
-	else if(input_array_size % 2 == 1)
+	else if (input_array_size % 2 == 1)
 	{
 		middle_index = (input_array_size / 2.0) - 0.5;
 	}
@@ -181,44 +181,44 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	T* pivot = input_array[pivot_index];
 
 
-	bool partitioned = false;	
+	bool partitioned = false;
 	int left = start_index;
 	int right = end_index;
 	int swap_left_index;
 	int swap_right_index = pivot_index;
 	T* temp;
 
-	while(!partitioned)
+	while (!partitioned)
 	{
-		for(; left < pivot_index; left++)
+		for (; left < pivot_index; left++)
 		{
-			if(input_array[left]->compare(pivot) == 1)
+			if (input_array[left]->compare(pivot) == 1)
 			{
 				swap_left_index = left;
 				break;
 			}
-			else if(left == pivot_index - 1)
+			else if (left == pivot_index - 1)
 			{
 				swap_left_index = pivot_index;
 				break;
 			}
 		}
 
-		for(; right > pivot_index; right--)
+		for (; right > pivot_index; right--)
 		{
-			if(input_array[right]->compare(pivot) == -1 || input_array[right]->compare(pivot) == 0)
+			if (input_array[right]->compare(pivot) == -1 || input_array[right]->compare(pivot) == 0)
 			{
 				swap_right_index = right;
 				break;
 			}
-			else if(right == pivot_index + 1)
+			else if (right == pivot_index + 1)
 			{
 				swap_right_index = pivot_index;
 				break;
 			}
 		}
 
-		if(swap_right_index == swap_left_index)
+		if (swap_right_index == swap_left_index)
 		{
 			if (input_array_size == 2)
 			{
@@ -240,22 +240,45 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 			temp = input_array[swap_right_index];
 			input_array[swap_right_index] = input_array[swap_left_index];
 			input_array[swap_left_index] = temp;
-			pivot_index = swap_left_index;	
+			pivot_index = swap_left_index;
 		}
 		else
 		{
 			temp = input_array[swap_right_index];
 			input_array[swap_right_index] = input_array[swap_left_index];
 			input_array[swap_left_index] = temp;
-		}	
+		}
 	}
 
-	
+
+
+
 	// Breaks recursion if infinite-recursion is detected
 	if ((pivot_index + 1) - (start_index) == input_array_size)
 	{
 		if (infinite_recursion_flag == true)
 		{
+
+			if (input_array_size < 100)
+			{
+				bool swap_made = true;
+				T* temp2;
+				while (swap_made)
+				{
+					swap_made = false;
+					for (int i = start_index; i < end_index + 1; i++)
+					{
+						if (input_array[i]->compare(input_array[i + 1]) == 1)
+						{
+							temp2 = input_array[i];
+							input_array[i] = input_array[i + 1];
+							input_array[i + 1] = temp2;
+							swap_made = true;
+						}
+					}
+				}
+			}
+
 			return 1;
 		}
 		else
@@ -263,10 +286,10 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 			infinite_recursion_flag = true;
 			quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
 			infinite_recursion_flag = false;
-			return 1;
+			return 1;	
 		}
 	}
-	
+
 
 	quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
 	quick_sort_internal(input_array, (end_index + 1) - (pivot_index + 1), pivot_index + 1, end_index);
@@ -360,7 +383,7 @@ public:
 int main()
 {
 
-	const int size = 500;
+	const int size = 500000;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
