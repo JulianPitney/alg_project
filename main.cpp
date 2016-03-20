@@ -118,6 +118,22 @@ template<class T> void Bubble_Sorter<T>::bubble_sort()
 }
 
 
+// STORAGE FOR ARRAY SCRAMBLE ON INFINITE RECURSION CONDITION DETECTION
+/*
+else if (input_array[pivot_index]->compare(input_array[middle_index]) == 0)
+{
+int random_swap_index;
+T* temp;
+
+for (int i = 0; i < input_array_size; i++)
+{
+random_swap_index = rand() % (input_array_size - 1);
+temp = input_array[i];
+input_array[i] = input_array[random_swap_index];
+input_array[random_swap_index] = temp;
+}
+}
+*/
 
 
 
@@ -133,7 +149,7 @@ public:
 
 private:
 
-	bool final_pass = true;
+	bool infinite_recursion_flag = false;
 	int quick_sort_internal(T* input_array[], int intput_array_size, int start_index, int end_index);
 		
 };
@@ -149,7 +165,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	{
 		return 1;
 	}
-
+	
 	int middle_index;	
 
 	if(input_array_size % 2 == 0)
@@ -234,15 +250,27 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 		}	
 	}
 
-
-	// this makes it almost work but it's still broken
+	
+	// Breaks recursion if infinite-recursion is detected
 	if ((pivot_index + 1) - (start_index) == input_array_size)
 	{
-		return 1;
+		if (infinite_recursion_flag == true)
+		{
+			return 1;
+		}
+		else
+		{
+			infinite_recursion_flag = true;
+			quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
+			infinite_recursion_flag = false;
+			return 1;
+		}
 	}
+	
 
 	quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
 	quick_sort_internal(input_array, (end_index + 1) - (pivot_index + 1), pivot_index + 1, end_index);
+
 
 	return pivot_index;
 }
@@ -332,7 +360,7 @@ public:
 int main()
 {
 
-	const int size = 30000;
+	const int size = 500;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -348,7 +376,7 @@ int main()
 
 	int errors = 0;
 	int correct = 0;
-
+	int* int_arr2 = new int[20];
 
 	for (int i = 0; i < size; i++)
 	{
@@ -364,8 +392,10 @@ int main()
 		else
 		{
 			errors++;
+			
 		}
 	}
+
 
 
 	cout << correct << " correct values" << endl;
