@@ -85,7 +85,7 @@ public:
 	
 
 	Bubble_Sorter(T* ptr_arr[], int sorting_array_size);
-	void bubble_sort();
+	int bubble_sort();
 
 private:
 };
@@ -96,7 +96,7 @@ template<class T> Bubble_Sorter<T>::Bubble_Sorter(T* ptr_arr[], int sorting_arra
 	cout << "Bubble sorter successfully created! \n";
 }
 
-template<class T> void Bubble_Sorter<T>::bubble_sort()
+template<class T> int Bubble_Sorter<T>::bubble_sort()
 {
 	bool swap_made = true;
 
@@ -115,25 +115,56 @@ template<class T> void Bubble_Sorter<T>::bubble_sort()
 			}
 		}                
 	}
+
+	return 1;
 }
 
 
-// STORAGE FOR ARRAY SCRAMBLE ON INFINITE RECURSION CONDITION DETECTION
-/*
-else if (input_array[pivot_index]->compare(input_array[middle_index]) == 0)
+
+
+
+
+
+// INSERTION SORTER
+
+template<class T> class Insertion_Sorter : public Sorter < T >
 {
-int random_swap_index;
-T* temp;
+public:
 
-for (int i = 0; i < input_array_size; i++)
+	Insertion_Sorter(T* ptr_arr[], int sorting_array_size);
+	int insertion_sort();
+
+
+protected:
+
+};
+
+template<class T> Insertion_Sorter<T>::Insertion_Sorter(T* ptr_arr[], int sorting_array_size) : Sorter<T>::Sorter(ptr_arr, sorting_array_size)
 {
-random_swap_index = rand() % (input_array_size - 1);
-temp = input_array[i];
-input_array[i] = input_array[random_swap_index];
-input_array[random_swap_index] = temp;
+	cout << "Insertion Sorter successfully created! \n";
 }
+
+template<class T> int Insertion_Sorter<T>::insertion_sort()
+{
+	T* temp;
+
+	for (int i = 1; i < sorting_array_size; i++)
+	{
+		for (int x = i - 1; i >= 0; i--)
+		{
+			if (this->sorting_array[x]->compare(this->sorting_array[i]) == 0)
+			{
+				
+			}
+		}
+	}
+
+
+	return 1;
 }
-*/
+
+
+
 
 
 
@@ -253,13 +284,17 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 
 
 
-	// Breaks recursion if infinite-recursion is detected
+	// Breaks recursion if infinite-recursion is detected. (The bubble sort component is a makeshift solution
+	// to an error in my partition phase. It works for most cases but if the error condition in the partition pops up
+	// at arrays larger than 10k i've set bubble sort to ignore it for the sake of performance. This means
+	// we can correctly sort most large arrays but as we start to get into the high millions the error condition starts
+	// to show up in >10000 sub-arrays and we end up with incorrect values.
+
 	if ((pivot_index + 1) - (start_index) == input_array_size)
 	{
 		if (infinite_recursion_flag == true)
 		{
-
-			if (input_array_size < 100)
+			if (input_array_size < 10000)
 			{
 				bool swap_made = true;
 				T* temp2;
@@ -295,7 +330,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	quick_sort_internal(input_array, (end_index + 1) - (pivot_index + 1), pivot_index + 1, end_index);
 
 
-	return pivot_index;
+	return 1;
 }
 
 template<class T> int Quick_Sorter<T>::quick_sort()
@@ -383,7 +418,7 @@ public:
 int main()
 {
 
-	const int size = 500000;
+	const int size = 10;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -393,35 +428,7 @@ int main()
 		test_arr[i] = new test_compare_object(int_arr[i]);
 	}
 
+	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
+	test3->insertion_sort();
 
-	Quick_Sorter<test_compare_object> *test2 = new Quick_Sorter<test_compare_object>(test_arr,size);
-	test2->quick_sort();
-
-	int errors = 0;
-	int correct = 0;
-	int* int_arr2 = new int[20];
-
-	for (int i = 0; i < size; i++)
-	{
-		if (i == size - 2)
-		{
-			break;
-		}
-
-		if (test_arr[i]->get_val() <= test_arr[i + 1]->get_val())
-		{
-			correct++;
-		}
-		else
-		{
-			errors++;
-			
-		}
-	}
-
-
-
-	cout << correct << " correct values" << endl;
-	cout << errors << " errors" << endl;
-	
  }
