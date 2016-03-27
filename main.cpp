@@ -147,38 +147,39 @@ template<class T> Insertion_Sorter<T>::Insertion_Sorter(T* ptr_arr[], int sortin
 template<class T> int Insertion_Sorter<T>::insertion_sort()
 {
 	T* temp;
-	bool swap_made = true;
-
-	while (swap_made)
+	
+	for (int i = 1; i < this->sorting_array_size; i++)
 	{
-		swap_made = false;
-
-		for (int i = 1; i < this->sorting_array_size; i++)
+		for (int z = i - 1; z >= 0; z--)
 		{
-			for (int x = i - 1; x >= 0; x--)
+			if (this->sorting_array[i]->compare(this->sorting_array[z]) == 0 || this->sorting_array[i]->compare(this->sorting_array[z]) == -1)
 			{
-				if (this->sorting_array[i]->compare(this->sorting_array[x]) == -1)
+				temp = this->sorting_array[i];
+
+				for (int x = i; x >= z + 1; x--)
 				{
-					continue;
+					this->sorting_array[x] = this->sorting_array[x - 1];
 				}
-				else
+
+				this->sorting_array[z + 1] = temp;
+				break;
+			}
+			else
+			{ 
+				if (z == 0)
 				{
 					temp = this->sorting_array[i];
 
-					for (int z = i; z > x; z--)
+					for (int h = i; h > 0; h--)
 					{
-						this->sorting_array[z] = this->sorting_array[z - 1];
+						this->sorting_array[h] = this->sorting_array[h - 1];
 					}
-					this->sorting_array[x] = temp;
-					swap_made = true;
+
+					this->sorting_array[0] = temp;
 					break;
 				}
-
-			}
-
-			if (i == this->sorting_array_size - 1 && this->sorting_array[i]->compare(this->sorting_array[i - 1]) == -1 || this->sorting_array[i]->compare(this->sorting_array[i - 1]) == 0)
-			{
-				swap_made = true;
+				
+				continue;
 			}
 		}
 	}
@@ -442,7 +443,7 @@ public:
 int main()
 {
 
-	const int size = 3000;
+	const int size = 30000;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -455,6 +456,7 @@ int main()
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
 	test3->insertion_sort();
 	test3->print_sorting_array();
-	cout << endl;
+
+	
 
  }
