@@ -406,10 +406,9 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 
 	int mid_index = this->find_arr_midpoint(start_index, end_index);
 
-	// Need to create empty sub-arrays for divide step. Don't know how to dynamically create empty arrays of pointers to 
-	// objects that have constructors
-	T* left_arr[] = new T[mid_index - start_index + 1];
-	T* right_arr[] = new T[end_index - mid_index];
+	// Getting stack overflow here. Don't know why.
+	T** left_arr = new T*[mid_index - start_index + 1];
+	T** right_arr = new T*[end_index - mid_index];
 
 	for (int i = start_index; i <= mid_index; i++)
 	{
@@ -424,9 +423,8 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 	right_arr = merge_sort(mid_index + 1, end_index, right_arr);
 
 
-	// Need to create empty sub-arrays for divide step. Don't know how to dynamically create empty arrays of pointers to 
-	// objects that have constructors
-	T* output_arr[] = new T[end_index - start_index + 1];
+	// Same as above, this will probably cause stack overflow. Don't know why.
+	T** output_arr = new T*[end_index - start_index + 1];
 
 	int left_index = 0;
 	int right_index = 0;
