@@ -386,7 +386,7 @@ template<class T> class Merge_Sorter : public Sorter<T>
 {
 public:
 	Merge_Sorter(T* arr_ptr[], int array_size);
-	T** merge_sort(int start_index, int end_index);
+	T** merge_sort(int start_index, int end_index, T* input_array[]);
 
 protected:
 
@@ -405,6 +405,9 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 	}
 
 	int mid_index = this->find_arr_midpoint(start_index, end_index);
+
+	// Need to create empty sub-arrays for divide step. Don't know how to dynamically create empty arrays of pointers to 
+	// objects that have constructors
 	T* left_arr[] = new T[mid_index - start_index + 1];
 	T* right_arr[] = new T[end_index - mid_index];
 
@@ -420,12 +423,34 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 	left_arr = merge_sort(0, mid_index, left_arr);
 	right_arr = merge_sort(mid_index + 1, end_index, right_arr);
 
+
+	// Need to create empty sub-arrays for divide step. Don't know how to dynamically create empty arrays of pointers to 
+	// objects that have constructors
 	T* output_arr[] = new T[end_index - start_index + 1];
 
-	for (int z = 0; z < end_index - start_index + 1; z++)
+	int left_index = 0;
+	int right_index = 0;
+	int output_index = 0;
+	bool is_merged = false;
+
+	while (!left_index >= mid_index - start_index + 1 && !right_index >= end_index - mid_index)
 	{
-		// merge step
+		if (left_arr[left_index]->compare(right_arr[right_index]) == 1)
+		{
+			output_arr[output_index] = right_arr[right_index];
+			output_index++;
+			right_index++;
+		}
+		else
+		{
+			output_arr[output_index] = left_arr[left_index];
+			output_index++;
+			left_index++;
+		}
+
 	}
+
+	return output_arr;
 
 }
 
@@ -507,7 +532,7 @@ public:
 int main()
 {
 
-	const int size = 30000;
+	const int size = 10;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -519,6 +544,9 @@ int main()
 
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
 	Merge_Sorter<test_compare_object> *test2 = new Merge_Sorter<test_compare_object>(test_arr, size);
+	test2->print_sorting_array();
+	test2->merge_sort(0, size - 1, test_arr);
+
 	
 
  }
