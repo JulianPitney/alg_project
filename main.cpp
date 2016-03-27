@@ -399,54 +399,44 @@ template<class T> Merge_Sorter<T>::Merge_Sorter(T* arr_ptr[], int array_size) : 
 
 template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index, T* input_array[])
 {
-	if ((end_index - start_index) + (2) <= 1)
+	if (end_index - start_index < 1)
 	{
 		return input_array;
 	}
 
 	int mid_index = this->find_arr_midpoint(start_index, end_index);
 
-	// Getting stack overflow here. Don't know why.
+
 	T** left_arr = new T*[mid_index - start_index + 1];
 	T** right_arr = new T*[end_index - mid_index];
-
-	for (int i = start_index; i <= mid_index; i++)
+	int temp_index = 0;
+	
+	for (int i = 0; i <= end_index; i++)
 	{
-		left_arr[i] = input_array[i];
-	}
-	for (int x = mid_index + 1; x <= end_index; x++)
-	{
-		right_arr[x] = input_array[x];
+		if (i <= mid_index)
+		{
+			left_arr[i] = input_array[i];
+		}
+		else if (i <= end_index)
+		{
+			right_arr[temp_index] = input_array[i];
+			temp_index++;
+		}
 	}
 
+	// Recursive step
 	left_arr = merge_sort(0, mid_index, left_arr);
 	right_arr = merge_sort(mid_index + 1, end_index, right_arr);
 
-
-	// Same as above, this will probably cause stack overflow. Don't know why.
 	T** output_arr = new T*[end_index - start_index + 1];
 
 	int left_index = 0;
 	int right_index = 0;
 	int output_index = 0;
-	bool is_merged = false;
 
-	while (!left_index >= mid_index - start_index + 1 && !right_index >= end_index - mid_index)
-	{
-		if (left_arr[left_index]->compare(right_arr[right_index]) == 1)
-		{
-			output_arr[output_index] = right_arr[right_index];
-			output_index++;
-			right_index++;
-		}
-		else
-		{
-			output_arr[output_index] = left_arr[left_index];
-			output_index++;
-			left_index++;
-		}
+	
 
-	}
+	
 
 	return output_arr;
 
@@ -544,6 +534,7 @@ int main()
 	Merge_Sorter<test_compare_object> *test2 = new Merge_Sorter<test_compare_object>(test_arr, size);
 	test2->print_sorting_array();
 	test2->merge_sort(0, size - 1, test_arr);
+	test2->print_sorting_array();
 
 	
 
