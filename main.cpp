@@ -432,14 +432,23 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 
 	int left_index = 0;
 	int right_index = 0;
-	int output_index = 0;
 
-	
-
-	
+	// Last thing left to fix is merge phase I think
+	for (int z = 0; z < (end_index - start_index + 1); z++)
+	{
+		if (left_arr[left_index]->compare(right_arr[right_index]) == 1)
+		{
+			output_arr[z] = right_arr[right_index];
+			right_index++;
+		}
+		else
+		{
+			output_arr[z] = left_arr[left_index];
+			left_index++;
+		}
+	}
 
 	return output_arr;
-
 }
 
 
