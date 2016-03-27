@@ -38,6 +38,7 @@ public:
 	Sorter(T* ptr_arr[], int sorting_array_size);
 	void update_sorting_array(T* ptr_arr[], int sorting_array_size);
 	void print_sorting_array();
+	int find_arr_midpoint(int start_index, int end_index);
 
 protected:
 	int sorting_array_size;
@@ -70,7 +71,17 @@ template<class T> void Sorter<T>::print_sorting_array()
 	}
 }
 
-
+template<class T> int Sorter<T>::find_arr_midpoint(int start_index, int end_index)
+{
+	if (start_index + end_index == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return (start_index + end_index) / 2;
+	}
+}
 
 
 
@@ -223,7 +234,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	}
 
 	int middle_index;
-
+	
 	if (input_array_size % 2 == 0)
 	{
 		middle_index = input_array_size / 2;
@@ -366,6 +377,59 @@ template<class T> int Quick_Sorter<T>::quick_sort()
 
 
 
+
+
+
+// Merge Sort
+
+template<class T> class Merge_Sorter : public Sorter<T>
+{
+public:
+	Merge_Sorter(T* arr_ptr[], int array_size);
+	T** merge_sort(int start_index, int end_index);
+
+protected:
+
+};
+
+template<class T> Merge_Sorter<T>::Merge_Sorter(T* arr_ptr[], int array_size) : Sorter<T>::Sorter(arr_ptr, array_size)
+{
+	cout << "Merge sorter successfully created \n";
+}
+
+template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index, T* input_array[])
+{
+	if ((end_index - start_index) + (2) <= 1)
+	{
+		return input_array;
+	}
+
+	int mid_index = this->find_arr_midpoint(start_index, end_index);
+	T* left_arr[] = new T[mid_index - start_index + 1];
+	T* right_arr[] = new T[end_index - mid_index];
+
+	for (int i = start_index; i <= mid_index; i++)
+	{
+		left_arr[i] = input_array[i];
+	}
+	for (int x = mid_index + 1; x <= end_index; x++)
+	{
+		right_arr[x] = input_array[x];
+	}
+
+	left_arr = merge_sort(0, mid_index, left_arr);
+	right_arr = merge_sort(mid_index + 1, end_index, right_arr);
+
+	T* output_arr[] = new T[end_index - start_index + 1];
+
+	for (int z = 0; z < end_index - start_index + 1; z++)
+	{
+		// merge step
+	}
+
+}
+
+
 // ARRAY GENERATORS
 
 int* int_arr_gen(int size)
@@ -454,9 +518,7 @@ int main()
 	}
 
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
-	test3->insertion_sort();
-	test3->print_sorting_array();
-
+	Merge_Sorter<test_compare_object> *test2 = new Merge_Sorter<test_compare_object>(test_arr, size);
 	
 
  }
