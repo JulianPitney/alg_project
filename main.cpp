@@ -406,7 +406,6 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 
 	int mid_index = this->find_arr_midpoint(start_index, end_index);
 
-
 	T** left_arr = new T*[mid_index - start_index + 1];
 	T** right_arr = new T*[end_index - mid_index];
 	int temp_index = 0;
@@ -436,16 +435,7 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 	// Last thing left to fix is merge phase I think
 	for (int z = 0; z < (end_index - start_index + 1); z++)
 	{
-		if (left_arr[left_index]->compare(right_arr[right_index]) == 1)
-		{
-			output_arr[z] = right_arr[right_index];
-			right_index++;
-		}
-		else
-		{
-			output_arr[z] = left_arr[left_index];
-			left_index++;
-		}
+		//fuuuuuuuck. Can't loop through left_arr or _right_arr because don't have their sizes...
 	}
 
 	return output_arr;
