@@ -423,22 +423,9 @@ template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index
 		}
 	}
 
-	// Recursive step
-	left_arr = merge_sort(0, mid_index, left_arr);
-	right_arr = merge_sort(mid_index + 1, end_index, right_arr);
+	
 
-	T** output_arr = new T*[end_index - start_index + 1];
-
-	int left_index = 0;
-	int right_index = 0;
-
-	// Last thing left to fix is merge phase I think
-	for (int z = 0; z < (end_index - start_index + 1); z++)
-	{
-		//fuuuuuuuck. Can't loop through left_arr or _right_arr because don't have their sizes...
-	}
-
-	return output_arr;
+	return left_arr;
 }
 
 
@@ -469,7 +456,6 @@ string* str_arr_gen(int size)
 		output_arr[i] = s1;
 	}
 
-	return output_arr;
 }
 
 
@@ -533,7 +519,6 @@ int main()
 	Merge_Sorter<test_compare_object> *test2 = new Merge_Sorter<test_compare_object>(test_arr, size);
 	test2->print_sorting_array();
 	test2->merge_sort(0, size - 1, test_arr);
-	test2->print_sorting_array();
 
 	
 
