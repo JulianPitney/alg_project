@@ -382,12 +382,17 @@ template<class T> int Quick_Sorter<T>::quick_sort()
 
 // Merge Sort
 
+template<typename T> struct mSort_ReturnPkg
+{
+	T** arr_ptr;
+	int arr_size;
+};
+
 template<class T> class Merge_Sorter : public Sorter<T>
 {
 public:
 	Merge_Sorter(T* arr_ptr[], int array_size);
-	T** merge_sort(int start_index, int end_index, T* input_array[]);
-
+	mSort_ReturnPkg<T> merge_sort(T* input_array[], int arr_size);
 protected:
 
 };
@@ -397,36 +402,69 @@ template<class T> Merge_Sorter<T>::Merge_Sorter(T* arr_ptr[], int array_size) : 
 	cout << "Merge sorter successfully created \n";
 }
 
-template<class T> T** Merge_Sorter<T>::merge_sort(int start_index, int end_index, T* input_array[])
+template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[], int arr_size)
 {
-	if (end_index - start_index < 1)
+	if(arr_size <= 1)
 	{
-		return input_array;
+		mSort_ReturnPkg<T> output;
+		output.arr_ptr = input_array;
+		output.arr_size = arr_size;
+		return output;
 	}
 
-	int mid_index = this->find_arr_midpoint(start_index, end_index);
 
-	T** left_arr = new T*[mid_index - start_index + 1];
-	T** right_arr = new T*[end_index - mid_index];
-	int temp_index = 0;
-	
-	for (int i = 0; i <= end_index; i++)
+	T** left_half;
+	T** right_half;	
+	int left_size;
+	int right_size;
+
+	if(arr_size % 2 == 0)
 	{
-		if (i <= mid_index)
-		{
-			left_arr[i] = input_array[i];
-		}
-		else if (i <= end_index)
-		{
-			right_arr[temp_index] = input_array[i];
-			temp_index++;
-		}
+		left_size = arr_size / 2;
+		right_size = left_size;
+	
+		left_half = new T*[left_size];
+		right_half = new T*[right_size]; 
+	}	
+	else
+	{
+		left_size = arr_size / 2;
+		right_size = left_size + 1;
+		
+		left_half = new T*[left_size];
+		right_half = new T*[right_size];
 	}
 
+	for(unsigned int i = 0; i < left_size; i++)
+	{
+		left_half[i] = input_array[i];
+	}
+
+	int right_index = 0;
+	for(unsigned int z = left_size; z < arr_size; z++)
+	{
+		right_half[right_index] = input_array[z];
+		right_index++;
+	}
+
+	mSort_ReturnPkg<T> left_side;
+	mSort_ReturnPkg<T> right_side;
+			
+	left_side = merge_sort(left_half, left_size);
+	right_side = merge_sort(right_half, right_size);	
+		
+
 	
 
-	return left_arr;
+	
 }
+
+
+
+
+
+
+
 
 
 // ARRAY GENERATORS
@@ -516,10 +554,8 @@ int main()
 	}
 
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
-	Merge_Sorter<test_compare_object> *test2 = new Merge_Sorter<test_compare_object>(test_arr, size);
-	test2->print_sorting_array();
-	test2->merge_sort(0, size - 1, test_arr);
+	Merge_Sorter<test_compare_object> *test1 = new Merge_Sorter<test_compare_object>(test_arr, size);
 
-	
+	test1->merge_sort(test_arr, size);
 
  }
