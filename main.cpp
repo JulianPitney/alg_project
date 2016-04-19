@@ -518,7 +518,7 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort_internal(T* inp
 
 // SORT ALG TIMER
 
-struct alg_time_info_packet
+struct PIP // Performance Info Packet (PIP)
 {
 	string name;
 	int input_data_size;
@@ -529,38 +529,74 @@ struct alg_time_info_packet
 template<class T> class Alg_Timer
 {
 public:
-	Bubble_Sorter<T>* alg1 = NULL;
-	Insertion_Sorter<T>* alg2 = NULL;
-	Quick_Sorter<T>* alg3 = NULL;
-	Merge_Sorter<T>* alg4 = NULL;
+	Bubble_Sorter<T>* BSort_ptr = NULL;
+	Insertion_Sorter<T>* ISort_ptr = NULL;
+	Quick_Sorter<T>* QSort_ptr = NULL;
+	Merge_Sorter<T>* MSort_ptr = NULL;
 	Sorter<T>* alg5 = NULL;
 	
-	vector<alg_time_info_packet*> alg1_performance_info;
-	vector<alg_time_info_packet*> alg2_performance_info;
-	vector<alg_time_info_packet*> alg3_performance_info;
-	vector<alg_time_info_packet*> alg4_performance_info;
-	vector<alg_time_info_packet*> alg5_performance_info;
+	vector<PIP*> BSort_performance_info;
+	vector<PIP*> ISort_performance_info;
+	vector<PIP*> QSort_performance_info;
+	vector<PIP*> MSort_performance_info;
+	vector<PIP*> alg5_performance_info;
 
-	Alg_Timer(Bubble_Sorter<T>* alg1_input, Insertion_Sorter<T>* alg2_input, Quick_Sorter<T>* alg3_input, Merge_Sorter<T>* alg4_input, Sorter<T>* alg5_input)
+	Alg_Timer(Bubble_Sorter<T>* BSort_input, Insertion_Sorter<T>* ISort_input, Quick_Sorter<T>* QSort_input, Merge_Sorter<T>* MSort_input, Sorter<T>* alg5_input)
 	{
-		alg1 = alg1_input;
-		alg2 = alg2_input;
-		alg3 = alg3_input;
-		alg4 = alg4_input;
+		BSort_ptr = BSort_input;
+		ISort_ptr = ISort_input;
+		QSort_ptr = QSort_input;
+		MSort_ptr = MSort_input;
 		alg5 = alg5_input;
 	}
 
-	void alg1_perform_test()
+	void BSort_performance_test()
 	{
-		alg_time_info_packet* time_packet = new alg_time_info_packet;
-		time_packet->input_data_size = alg1->get_arr_size();
+		PIP* test_data = new PIP;
+		test_data->input_data_size = BSort_ptr->get_arr_size();
 
-		time(&time_packet->start);
-		this->alg1->sort();		
-		time(&time_packet->end);
+		time(&test_data->start);
+		this->BSort_ptr->sort();		
+		time(&test_data->end);
 
-		this->alg1_performance_info.push_back(time_packet);
+		this->BSort_performance_info.push_back(test_data);
+	}
+	
+	void ISort_performance_test()
+	{
+		PIP* test_data = new PIP;
+		test_data->input_data_size = ISort_ptr->get_arr_size();
+
+		time(&test_data->start);
+		this->ISort_ptr->sort();
+		time(&test_data->end);
+
+		this->ISort_performance_info.push_back(test_data);	
 	}	
+
+	void QSort_performance_test()
+	{
+		PIP* test_data = new PIP;
+		test_data->input_data_size = QSort_ptr->get_arr_size();
+	
+		time(&test_data->start);
+		this->QSort_ptr->sort();
+		time(&test_data->end);
+		
+		this->QSort_performance_info.push_back(test_data);	
+	}
+
+	void MSort_performance_test()
+	{
+		PIP* test_data = new PIP;
+		test_data->input_data_size = MSort_ptr->get_arr_size();
+		
+		time(&test_data->start);
+		this->MSort_ptr->sort();
+		time(&test_data->end);
+
+		this->MSort_performance_info.push_back(test_data);
+	}
 };
 
 
@@ -663,9 +699,11 @@ int main()
 	test4->sort();
 	
 	// alg timer test stuff
-	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,NULL,NULL,NULL,NULL);
-	test5->alg1_perform_test();
-	cout << test5->alg1_performance_info[0]->start << endl;
-	cout << test5->alg1_performance_info[0]->end << endl;
+	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,test2,test3,test4,NULL);
+
+	test5->BSort_performance_test();
+	test5->ISort_performance_test();
+	test5->QSort_performance_test();
+	test5->MSort_performance_test();
 
 }
