@@ -478,7 +478,7 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[
 	{
 		for(int i = output_ind; i < arr_size; i++)
 		{
-			input_array[output_ind] = left_side.arr_ptr[left_ind];
+			input_array[i] = left_side.arr_ptr[left_ind];
 			left_ind++;
 		}
 	}
@@ -486,7 +486,7 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[
 	{
 		for(int i = output_ind; i < arr_size; i++)
 		{
-			input_array[output_ind] = right_side.arr_ptr[right_ind];
+			input_array[i] = right_side.arr_ptr[right_ind];
 			right_ind++;
 		}
 	}
@@ -581,7 +581,7 @@ public:
 int main()
 {
 
-	const int size = 10;
+	const int size = 10000000;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -593,7 +593,6 @@ int main()
 
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
 	Merge_Sorter<test_compare_object> *test1 = new Merge_Sorter<test_compare_object>(test_arr, size);
-	test1->print_sorting_array();
 	test1->merge_sort(test_arr, size);
 	test1->print_sorting_array();
 
