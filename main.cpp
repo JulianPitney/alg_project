@@ -452,11 +452,49 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[
 			
 	left_side = merge_sort(left_half, left_size);
 	right_side = merge_sort(right_half, right_size);	
-		
 
-	
+	int left_ind = 0;
+	int right_ind = 0;
+	int output_ind = 0;
+	while(left_side.arr_size != 0 && right_side.arr_size != 0)
+	{
+		if(left_side.arr_ptr[left_ind]->compare(right_side.arr_ptr[right_ind]) == 1)
+		{
+			input_array[output_ind] = right_side.arr_ptr[right_ind];
+			output_ind++;
+			right_ind++;
+			right_side.arr_size--;
+		}
+		else
+		{
+			input_array[output_ind] = left_side.arr_ptr[left_ind];
+			output_ind++;
+			left_ind++;
+			left_side.arr_size--;
+		}		
+	}		
 
-	
+	if(right_side.arr_size == 0)
+	{
+		for(int i = output_ind; i < arr_size; i++)
+		{
+			input_array[output_ind] = left_side.arr_ptr[left_ind];
+			left_ind++;
+		}
+	}
+	else if (left_side.arr_size == 0)
+	{
+		for(int i = output_ind; i < arr_size; i++)
+		{
+			input_array[output_ind] = right_side.arr_ptr[right_ind];
+			right_ind++;
+		}
+	}
+
+	mSort_ReturnPkg<T> rtrn_pkg;
+	rtrn_pkg.arr_ptr = input_array;
+	rtrn_pkg.arr_size = arr_size;
+	return rtrn_pkg;
 }
 
 
@@ -555,7 +593,8 @@ int main()
 
 	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
 	Merge_Sorter<test_compare_object> *test1 = new Merge_Sorter<test_compare_object>(test_arr, size);
-
+	test1->print_sorting_array();
 	test1->merge_sort(test_arr, size);
+	test1->print_sorting_array();
 
  }
