@@ -1,6 +1,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <time.h>
+#include <vector>
 
 using namespace std;
 
@@ -39,7 +41,7 @@ public:
 	void update_sorting_array(T* ptr_arr[], int sorting_array_size);
 	void print_sorting_array();
 	int find_arr_midpoint(int start_index, int end_index);
-
+	int get_arr_size();
 protected:
 	int sorting_array_size;
 	T** sorting_array;
@@ -58,6 +60,10 @@ template<class T> void Sorter<T>::update_sorting_array(T* updated_ptr_arr[], int
 	this->sorting_array_size = sorting_array_size;
 }
 
+template<class T> int Sorter<T>::get_arr_size()
+{
+	return this->sorting_array_size;
+}
 
 // This is broken. Need to come up with generic way for printing list of objects. Probably need standardized get_val or print_val 
 // inside the objects being sorted.
@@ -96,7 +102,7 @@ public:
 	
 
 	Bubble_Sorter(T* ptr_arr[], int sorting_array_size);
-	int bubble_sort();
+	int sort();
 
 private:
 };
@@ -107,7 +113,7 @@ template<class T> Bubble_Sorter<T>::Bubble_Sorter(T* ptr_arr[], int sorting_arra
 	cout << "Bubble sorter successfully created! \n";
 }
 
-template<class T> int Bubble_Sorter<T>::bubble_sort()
+template<class T> int Bubble_Sorter<T>::sort()
 {
 	bool swap_made = true;
 
@@ -143,7 +149,7 @@ template<class T> class Insertion_Sorter : public Sorter <T>
 public:
 
 	Insertion_Sorter(T* ptr_arr[], int sorting_array_size);
-	int insertion_sort();
+	int sort();
 
 
 protected:
@@ -155,7 +161,7 @@ template<class T> Insertion_Sorter<T>::Insertion_Sorter(T* ptr_arr[], int sortin
 	cout << "Insertion Sorter successfully created! \n";
 }
 
-template<class T> int Insertion_Sorter<T>::insertion_sort()
+template<class T> int Insertion_Sorter<T>::sort()
 {
 	T* temp;
 	
@@ -211,7 +217,7 @@ template<class T> class Quick_Sorter : public Sorter<T>
 public:
 
 	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
-	int quick_sort();
+	int sort();
 
 
 private:
@@ -369,7 +375,7 @@ template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int
 	return 1;
 }
 
-template<class T> int Quick_Sorter<T>::quick_sort()
+template<class T> int Quick_Sorter<T>::sort()
 {
 	return this->quick_sort_internal(this->sorting_array, this->sorting_array_size, 0, this->sorting_array_size - 1);
 }
@@ -392,7 +398,8 @@ template<class T> class Merge_Sorter : public Sorter<T>
 {
 public:
 	Merge_Sorter(T* arr_ptr[], int array_size);
-	mSort_ReturnPkg<T> merge_sort(T* input_array[], int arr_size);
+	void sort();
+	mSort_ReturnPkg<T> merge_sort_internal(T* input_array[], int arr_size);
 protected:
 
 };
@@ -402,7 +409,11 @@ template<class T> Merge_Sorter<T>::Merge_Sorter(T* arr_ptr[], int array_size) : 
 	cout << "Merge sorter successfully created \n";
 }
 
-template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[], int arr_size)
+template<class T> void Merge_Sorter<T>::sort()
+{
+	this->merge_sort_internal(this->sorting_array, this->sorting_array_size);
+}
+template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort_internal(T* input_array[], int arr_size)
 {
 	if(arr_size <= 1)
 	{
@@ -450,8 +461,8 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[
 	mSort_ReturnPkg<T> left_side;
 	mSort_ReturnPkg<T> right_side;
 			
-	left_side = merge_sort(left_half, left_size);
-	right_side = merge_sort(right_half, right_size);	
+	left_side = merge_sort_internal(left_half, left_size);
+	right_side = merge_sort_internal(right_half, right_size);	
 
 	int left_ind = 0;
 	int right_ind = 0;
@@ -502,6 +513,55 @@ template<class T> mSort_ReturnPkg<T> Merge_Sorter<T>::merge_sort(T* input_array[
 
 
 
+
+	
+
+// SORT ALG TIMER
+
+struct alg_time_info_packet
+{
+	string name;
+	int input_data_size;
+	time_t start;
+	time_t end;	
+};
+
+template<class T> class Alg_Timer
+{
+public:
+	Bubble_Sorter<T>* alg1 = NULL;
+	Insertion_Sorter<T>* alg2 = NULL;
+	Quick_Sorter<T>* alg3 = NULL;
+	Merge_Sorter<T>* alg4 = NULL;
+	Sorter<T>* alg5 = NULL;
+	
+	vector<alg_time_info_packet*> alg1_performance_info;
+	vector<alg_time_info_packet*> alg2_performance_info;
+	vector<alg_time_info_packet*> alg3_performance_info;
+	vector<alg_time_info_packet*> alg4_performance_info;
+	vector<alg_time_info_packet*> alg5_performance_info;
+
+	Alg_Timer(Bubble_Sorter<T>* alg1_input, Insertion_Sorter<T>* alg2_input, Quick_Sorter<T>* alg3_input, Merge_Sorter<T>* alg4_input, Sorter<T>* alg5_input)
+	{
+		alg1 = alg1_input;
+		alg2 = alg2_input;
+		alg3 = alg3_input;
+		alg4 = alg4_input;
+		alg5 = alg5_input;
+	}
+
+	void alg1_perform_test()
+	{
+		alg_time_info_packet* time_packet = new alg_time_info_packet;
+		time_packet->input_data_size = alg1->get_arr_size();
+
+		time(&time_packet->start);
+		this->alg1->sort();		
+		time(&time_packet->end);
+
+		this->alg1_performance_info.push_back(time_packet);
+	}	
+};
 
 
 
@@ -581,7 +641,7 @@ public:
 int main()
 {
 
-	const int size = 10000000;
+	const int size = 10;
 	int* int_arr = int_arr_gen(size);
 
 	test_compare_object** test_arr = new test_compare_object*[size];
@@ -591,9 +651,21 @@ int main()
 		test_arr[i] = new test_compare_object(int_arr[i]);
 	}
 
-	Insertion_Sorter<test_compare_object> *test3 = new Insertion_Sorter<test_compare_object>(test_arr, size);
-	Merge_Sorter<test_compare_object> *test1 = new Merge_Sorter<test_compare_object>(test_arr, size);
-	test1->merge_sort(test_arr, size);
-	test1->print_sorting_array();
 
- }
+	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr, size);
+	Insertion_Sorter<test_compare_object> *test2 = new Insertion_Sorter<test_compare_object>(test_arr, size);
+	Quick_Sorter<test_compare_object> *test3 = new Quick_Sorter<test_compare_object>(test_arr, size);
+	Merge_Sorter<test_compare_object> *test4 = new Merge_Sorter<test_compare_object>(test_arr, size);
+
+	test1->sort();
+	test2->sort();
+	test3->sort();
+	test4->sort();
+	
+	// alg timer test stuff
+	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,NULL,NULL,NULL,NULL);
+	test5->alg1_perform_test();
+	cout << test5->alg1_performance_info[0]->start << endl;
+	cout << test5->alg1_performance_info[0]->end << endl;
+
+}
