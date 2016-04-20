@@ -3,31 +3,17 @@
 #include <string>
 #include <time.h>
 #include <vector>
-
+#include <math.h>
 using namespace std;
 
 
+// THINGS TO DO:
+//
+// - Fix merge_sort memory leaks
+// - Fix quick_sort + quick_sort memory leaks
+// - Make generic print function in Sorter class
 
 
-
-/*				Things To Do (Lower Level)
-//
-//	1. Make generic derived class' constructor work [COMPLETE]
-//	2. Implement bubblesort as test once basic generic sorter structure is built [COMPLETE]
-//	3. Make variable names better
-//	4. Make passing pointer to array of pointers to generic objects that have constructors to the constructor of an object from a generic derived class work [COMPLETE]
-//	5. Drink mountain dew [COMPLETE]
-//	6. Implement generic quicksort
-//  	7. Implement generic mergesort
-//  	8. Implement generic heapsort
-// 	9. Generic print function (probably need a standar object specific implementation)
-//
-//				Things To Do (Higher Level)
-//
-//  9. Implement various other interesting sorting algs (time permitting)
-// 10. Implement generic high performance data structures for storing stuff before processing
-// 11. See about alg visualization (maybe openGL?)
-*/ 
 
 
 
@@ -42,6 +28,7 @@ public:
 	void print_sorting_array();
 	int find_arr_midpoint(int start_index, int end_index);
 	int get_arr_size();
+	T** get_sorting_array();
 protected:
 	int sorting_array_size;
 	T** sorting_array;
@@ -63,6 +50,11 @@ template<class T> void Sorter<T>::update_sorting_array(T* updated_ptr_arr[], int
 template<class T> int Sorter<T>::get_arr_size()
 {
 	return this->sorting_array_size;
+}
+
+template<class T> T** Sorter<T>::get_sorting_array()
+{
+	return this->sorting_array;
 }
 
 // This is broken. Need to come up with generic way for printing list of objects. Probably need standardized get_val or print_val 
@@ -204,7 +196,6 @@ template<class T> int Insertion_Sorter<T>::sort()
 
 	return 1;
 }
-
 
 
 
@@ -526,6 +517,18 @@ struct PIP // Performance Info Packet (PIP)
 	time_t end;	
 };
 
+
+// - Allows individual tests to be performed on any of the 4 sorting objects that are passed in on initialisation
+// - Each performance_test produces a performance_info_packet that is stored in a vector pertaining to the sorting object that underwent the test
+// - Has print function which displays contents of the performance info vector of each of the 4 sorting objects
+// 
+// NOTE: User is responsible for updating the sorting_array of the sorting objects after each test (as they become sorted after each test and therefore
+// useless for further tests)
+//
+// NOTE: If we add a new sorting algorithm to this class we must; 1. Add a pointer to locate it's object and initilize that pointer in the Alg_Timer constructor
+//								  2. Add a performance_test function for the new algorithm
+//								  3. Add a new PIP vector to contain the data packets produced by the new performance_test function
+//								  4. Add a loop in Print_Performance_Info to print the contents of the new PIP vector 
 template<class T> class Alg_Timer
 {
 public:
@@ -533,23 +536,72 @@ public:
 	Insertion_Sorter<T>* ISort_ptr = NULL;
 	Quick_Sorter<T>* QSort_ptr = NULL;
 	Merge_Sorter<T>* MSort_ptr = NULL;
-	Sorter<T>* alg5 = NULL;
 	
 	vector<PIP*> BSort_performance_info;
 	vector<PIP*> ISort_performance_info;
 	vector<PIP*> QSort_performance_info;
 	vector<PIP*> MSort_performance_info;
-	vector<PIP*> alg5_performance_info;
 
-	Alg_Timer(Bubble_Sorter<T>* BSort_input, Insertion_Sorter<T>* ISort_input, Quick_Sorter<T>* QSort_input, Merge_Sorter<T>* MSort_input, Sorter<T>* alg5_input)
+	Alg_Timer(Bubble_Sorter<T>* BSort_input, Insertion_Sorter<T>* ISort_input, Quick_Sorter<T>* QSort_input, Merge_Sorter<T>* MSort_input)
 	{
 		BSort_ptr = BSort_input;
 		ISort_ptr = ISort_input;
 		QSort_ptr = QSort_input;
 		MSort_ptr = MSort_input;
-		alg5 = alg5_input;
 	}
 
+
+
+	void Print_Performance_Info()
+	{
+		cout << "\n\n";
+
+		cout << "Bubble Sort Performance Info" << endl << endl;	
+	
+		for(int i = 0; i < BSort_performance_info.size(); i++)
+		{
+			cout << "Input Size: " << BSort_performance_info[i]->input_data_size << endl;
+			cout << "Elapsed Time: " << BSort_performance_info[i]->end - BSort_performance_info[i]->start << endl;
+			cout << endl;
+		}
+	
+		cout << "\n\n";
+
+		cout << "Insertion Sort Performance Info" << endl << endl;	
+	
+		for(int i = 0; i < ISort_performance_info.size(); i++)
+		{
+			cout << "Input Size: " << ISort_performance_info[i]->input_data_size << endl;
+			cout << "Elapsed Time: " << ISort_performance_info[i]->end - ISort_performance_info[i]->start << endl;
+			cout << endl;
+		}
+
+		cout << "\n\n";
+
+		cout << "Quick Sort Performance Info" << endl << endl;	
+	
+		for(int i = 0; i < QSort_performance_info.size(); i++)
+		{
+			cout << "Input Size: " << QSort_performance_info[i]->input_data_size << endl;
+			cout << "Elapsed Time: " << QSort_performance_info[i]->end - QSort_performance_info[i]->start << endl;
+			cout << endl;
+		}
+
+		cout << "\n\n";
+	
+		cout << "Merge Sort Performance Info" << endl << endl;	
+	
+		for(int i = 0; i < MSort_performance_info.size(); i++)
+		{
+			cout << "Input Size: " << MSort_performance_info[i]->input_data_size << endl;
+			cout << "Elapsed Time: " << MSort_performance_info[i]->end - MSort_performance_info[i]->start << endl;
+			cout << endl;
+		}
+		
+		cout << "\n\n";
+	}
+	
+	
 	void BSort_performance_test()
 	{
 		PIP* test_data = new PIP;
@@ -561,7 +613,7 @@ public:
 
 		this->BSort_performance_info.push_back(test_data);
 	}
-	
+
 	void ISort_performance_test()
 	{
 		PIP* test_data = new PIP;
@@ -631,6 +683,7 @@ string* str_arr_gen(int size)
 }
 
 
+
 class test_compare_object
 {
 
@@ -671,6 +724,20 @@ public:
 	}
 };
 
+test_compare_object** test_arr_gen(int size)
+{
+	test_compare_object** test_arr = new test_compare_object*[size];
+	int* int_arr = int_arr_gen(size);
+
+	for(int i = 0; i < size; i++)
+	{
+		test_arr[i] = new test_compare_object(int_arr[i]);
+	}
+
+	return test_arr;
+}
+
+
 
 
 
@@ -678,32 +745,35 @@ int main()
 {
 
 	const int size = 10;
-	int* int_arr = int_arr_gen(size);
-
-	test_compare_object** test_arr = new test_compare_object*[size];
-
-	for (int i = 0; i < size; i++)
-	{
-		test_arr[i] = new test_compare_object(int_arr[i]);
-	}
+	test_compare_object** test_arr1 = test_arr_gen(size);
+	test_compare_object** test_arr2 = test_arr_gen(size);
+	test_compare_object** test_arr3 = test_arr_gen(size);
+	test_compare_object** test_arr4 = test_arr_gen(size);
 
 
-	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr, size);
-	Insertion_Sorter<test_compare_object> *test2 = new Insertion_Sorter<test_compare_object>(test_arr, size);
-	Quick_Sorter<test_compare_object> *test3 = new Quick_Sorter<test_compare_object>(test_arr, size);
-	Merge_Sorter<test_compare_object> *test4 = new Merge_Sorter<test_compare_object>(test_arr, size);
+	// Alg Objects + Sorting Functions
+	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr1, size);
+	Insertion_Sorter<test_compare_object> *test2 = new Insertion_Sorter<test_compare_object>(test_arr2, size);
+	Quick_Sorter<test_compare_object> *test3 = new Quick_Sorter<test_compare_object>(test_arr3, size);
+	Merge_Sorter<test_compare_object> *test4 = new Merge_Sorter<test_compare_object>(test_arr4, size);
 
-	test1->sort();
-	test2->sort();
-	test3->sort();
-	test4->sort();
+
+	// Alg Timer Code
+	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,test2,test3,test4);
+
+
+	// Performs tests on whatever sorting_objects contained in the Alg_Timer object are specified, feeding in a new array after each iteration
+	// NOTE: Has memory leak, fix later
+	int test_iterations = 7;
 	
-	// alg timer test stuff
-	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,test2,test3,test4,NULL);
+	for(int i = 1; i <= test_iterations; i++)
+	{
+		test3->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
+		test5->QSort_performance_test();
 
-	test5->BSort_performance_test();
-	test5->ISort_performance_test();
-	test5->QSort_performance_test();
-	test5->MSort_performance_test();
-
+		test4->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
+		test5->MSort_performance_test();
+	}
+	
+	test5->Print_Performance_Info();		
 }
