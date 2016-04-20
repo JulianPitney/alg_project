@@ -10,9 +10,12 @@ using namespace std;
 // THINGS TO DO:
 //
 // - Fix merge_sort memory leaks
-// - Fix quick_sort + quick_sort memory leaks
+// - Fix quick_sort error probly (kind of explained in quick_sort code)
+// - Fix quick_sort memory leaks
 // - Make generic print function in Sorter class
-
+// - Make Print_Performance_Info function in Alg_Timer class prettier
+// - Fix all my terrible function and variable names and format the code better
+// - Fix memory leaks in main() during testing of algorithms (generates new array after each test and doesn't delete the old ones)
 
 
 
@@ -764,7 +767,7 @@ int main()
 
 	// Performs tests on whatever sorting_objects contained in the Alg_Timer object are specified, feeding in a new array after each iteration
 	// NOTE: Has memory leak, fix later
-	int test_iterations = 7;
+	int test_iterations = 5;
 	
 	for(int i = 1; i <= test_iterations; i++)
 	{
@@ -773,6 +776,13 @@ int main()
 
 		test4->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
 		test5->MSort_performance_test();
+
+		test1->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
+		test5->BSort_performance_test();
+
+		test2->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
+		test5->ISort_performance_test();
+	
 	}
 	
 	test5->Print_Performance_Info();		
