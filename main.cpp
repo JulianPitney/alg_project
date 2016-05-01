@@ -206,19 +206,19 @@ template<class T> int Insertion_Sorter<T>::sort()
 
 // QUICK SORTER
 
+template<typename T> struct qSort_ReturnPkg
+{
+	T** arr;
+	int arr_size;	
+}
+
 template<class T> class Quick_Sorter : public Sorter<T>
 {
 public:
 
 	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
-	int sort();
+	quick_sort(T* input_array[], int input_arr_size);
 
-
-private:
-
-	bool infinite_recursion_flag = false;
-	int quick_sort_internal(T* input_array[], int intput_array_size, int start_index, int end_index);
-		
 };
 
 template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_size) : Sorter<T>::Sorter(ptr_arr, sorting_array_size)
@@ -226,153 +226,25 @@ template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_
 	cout << "Quick_Sorter successfully created! \n";
 }
 
-template<class T> int Quick_Sorter<T>::quick_sort_internal(T* input_array[], int input_array_size, int start_index, int end_index)
+template<class T> qSort_ReturnPkg Quick_Sorter<T>::quick_sort_internal(T* input_array[], int input_arr_size)
 {
-	if (input_array_size <= 1)
+	if(input_arr_size < 2)
 	{
-		return 1;
+		qSort_ReturnPkg<T> output;
+		output.arr = input_array;
+		output.arr_size = input_arr_size;
+		return output;
 	}
+
 
 	int middle_index;
+
 	
-	if (input_array_size % 2 == 0)
-	{
-		middle_index = input_array_size / 2;
-	}
-	else if (input_array_size % 2 == 1)
-	{
-		middle_index = (input_array_size / 2.0) - 0.5;
-	}
-
-	int pivot_index = middle_index + start_index;
-	T* pivot = input_array[pivot_index];
-
-
-	bool partitioned = false;
-	int left = start_index;
-	int right = end_index;
-	int swap_left_index;
-	int swap_right_index = pivot_index;
-	T* temp;
-
-	while (!partitioned)
-	{
-		for (; left < pivot_index; left++)
-		{
-			if (input_array[left]->compare(pivot) == 1)
-			{
-				swap_left_index = left;
-				break;
-			}
-			else if (left == pivot_index - 1)
-			{
-				swap_left_index = pivot_index;
-				break;
-			}
-		}
-
-		for (; right > pivot_index; right--)
-		{
-			if (input_array[right]->compare(pivot) == -1 || input_array[right]->compare(pivot) == 0)
-			{
-				swap_right_index = right;
-				break;
-			}
-			else if (right == pivot_index + 1)
-			{
-				swap_right_index = pivot_index;
-				break;
-			}
-		}
-
-		if (swap_right_index == swap_left_index)
-		{
-			if (input_array_size == 2)
-			{
-				return 1;
-			}
-
-			partitioned = true;
-			break;
-		}
-		else if (swap_left_index == pivot_index)
-		{
-			temp = input_array[swap_left_index];
-			input_array[swap_left_index] = input_array[swap_right_index];
-			input_array[swap_right_index] = temp;
-			pivot_index = swap_right_index;
-		}
-		else if (swap_right_index == pivot_index)
-		{
-			temp = input_array[swap_right_index];
-			input_array[swap_right_index] = input_array[swap_left_index];
-			input_array[swap_left_index] = temp;
-			pivot_index = swap_left_index;
-		}
-		else
-		{
-			temp = input_array[swap_right_index];
-			input_array[swap_right_index] = input_array[swap_left_index];
-			input_array[swap_left_index] = temp;
-		}
-	}
-
-
-
-
-	// Breaks recursion if infinite-recursion is detected. (The bubble sort component is a makeshift solution
-	// to an error in my partition phase. It works for most cases but if the error condition in the partition pops up
-	// at arrays larger than 10k i've set bubble sort to ignore it for the sake of performance. This means
-	// we can correctly sort most large arrays but as we start to get into the high millions the error condition starts
-	// to show up in >10000 sub-arrays and we end up with incorrect values.
-
-	if ((pivot_index + 1) - (start_index) == input_array_size)
-	{
-		if (infinite_recursion_flag == true)
-		{
-			if (input_array_size < 10000)
-			{
-				bool swap_made = true;
-				T* temp2;
-				while (swap_made)
-				{
-					swap_made = false;
-					for (int i = start_index; i < end_index + 1; i++)
-					{
-						if (input_array[i]->compare(input_array[i + 1]) == 1)
-						{
-							temp2 = input_array[i];
-							input_array[i] = input_array[i + 1];
-							input_array[i + 1] = temp2;
-							swap_made = true;
-						}
-					}
-				}
-			}
-
-			return 1;
-		}
-		else
-		{
-			infinite_recursion_flag = true;
-			quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
-			infinite_recursion_flag = false;
-			return 1;	
-		}
-	}
-
-
-	quick_sort_internal(input_array, (pivot_index + 1) - (start_index), start_index, pivot_index);
-	quick_sort_internal(input_array, (end_index + 1) - (pivot_index + 1), pivot_index + 1, end_index);
-
-
-	return 1;
 }
 
-template<class T> int Quick_Sorter<T>::sort()
-{
-	return this->quick_sort_internal(this->sorting_array, this->sorting_array_size, 0, this->sorting_array_size - 1);
-}
+
+
+
 
 
 
@@ -767,23 +639,8 @@ int main()
 
 	// Performs tests on whatever sorting_objects contained in the Alg_Timer object are specified, feeding in a new array after each iteration
 	// NOTE: Has memory leak, fix later
-	int test_iterations = 5;
 	
-	for(int i = 1; i <= test_iterations; i++)
-	{
-		test3->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
-		test5->QSort_performance_test();
 
-		test4->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
-		test5->MSort_performance_test();
 
-		test1->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
-		test5->BSort_performance_test();
-
-		test2->update_sorting_array(test_arr_gen(pow(10, i)), pow(10, i));
-		test5->ISort_performance_test();
 	
-	}
-	
-	test5->Print_Performance_Info();		
 }
