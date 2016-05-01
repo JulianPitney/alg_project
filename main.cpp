@@ -210,15 +210,18 @@ template<typename T> struct qSort_ReturnPkg
 {
 	T** arr;
 	int arr_size;	
-}
+	int start_index;
+	int end_index;
+};
 
 template<class T> class Quick_Sorter : public Sorter<T>
 {
 public:
 
 	Quick_Sorter(T* ptr_arr[], int sorting_array_size);
-	quick_sort(T* input_array[], int input_arr_size);
-
+	qSort_ReturnPkg<T> quick_sort_internal(qSort_ReturnPkg<T> input_pkg);
+	int quick_sort();
+	int hoare_partition(T** arr, int start_index, int end_index);
 };
 
 template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_size) : Sorter<T>::Sorter(ptr_arr, sorting_array_size)
@@ -226,20 +229,73 @@ template<class T> Quick_Sorter<T>::Quick_Sorter(T* ptr_arr[], int sorting_array_
 	cout << "Quick_Sorter successfully created! \n";
 }
 
-template<class T> qSort_ReturnPkg Quick_Sorter<T>::quick_sort_internal(T* input_array[], int input_arr_size)
+template<class T> int Quick_Sorter<T>::hoare_partition(T** arr, int start_index, int end_index)
 {
-	if(input_arr_size < 2)
+	T* pivot = arr[start_index];
+	int i = start_index - 1;
+	int j = end_index + 1;
+	T* temp;
+
+	while(true)
 	{
-		qSort_ReturnPkg<T> output;
-		output.arr = input_array;
-		output.arr_size = input_arr_size;
-		return output;
+		while(arr[j]->compare(pivot) == 1)
+		{
+			j--;
+			if(j == start_index)
+			{
+				break;
+			}
+		}
+		
+		while(arr[i]->compare(pivot) == -1)
+		{
+			i++;
+			if(i == end_index)
+			{
+				break;
+			}
+		}
+
+
+		if(i < j)
+		{
+			temp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = temp;	
+		}
+		else
+		{
+			return j;
+		}
+	}
+}
+
+template<class T> qSort_ReturnPkg<T> Quick_Sorter<T>::quick_sort_internal(qSort_ReturnPkg<T> input_pkg)
+{
+	if(input_pkg.arr_size < 2)
+	{
+		return input_pkg;
 	}
 
 
-	int middle_index;
+	int split = hoare_partition(input_pkg.arr, input_pkg.start_index, input_pkg.end_index);
+	
+	
+	return input_pkg;
+
 
 	
+}
+
+template<class T> int Quick_Sorter<T>::quick_sort()
+{
+	qSort_ReturnPkg<T> initial_pkg;
+	initial_pkg.arr = this->sorting_array;
+	initial_pkg.arr_size = this->sorting_array_size;
+	initial_pkg.start_index = 0;
+	initial_pkg.end_index = this->sorting_array_size - 1;
+
+	quick_sort_internal(initial_pkg);
 }
 
 
@@ -630,6 +686,11 @@ int main()
 	Bubble_Sorter<test_compare_object> *test1 = new Bubble_Sorter<test_compare_object>(test_arr1, size);
 	Insertion_Sorter<test_compare_object> *test2 = new Insertion_Sorter<test_compare_object>(test_arr2, size);
 	Quick_Sorter<test_compare_object> *test3 = new Quick_Sorter<test_compare_object>(test_arr3, size);
+	test3->print_sorting_array();
+	test3->quick_sort();
+	test3->print_sorting_array();
+
+
 	Merge_Sorter<test_compare_object> *test4 = new Merge_Sorter<test_compare_object>(test_arr4, size);
 
 
@@ -637,9 +698,7 @@ int main()
 	Alg_Timer<test_compare_object> *test5 = new Alg_Timer<test_compare_object>(test1,test2,test3,test4);
 
 
-	// Performs tests on whatever sorting_objects contained in the Alg_Timer object are specified, feeding in a new array after each iteration
-	// NOTE: Has memory leak, fix later
-	
+	cout << 1/2 << endl;	
 
 
 	
